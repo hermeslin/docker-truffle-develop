@@ -1,0 +1,31 @@
+version: "2"
+services:
+  #############################
+  # truffle
+  #############################
+  truffle:
+    image: hermeslin/private-chain:truffle-1.0
+    build:
+      context: ./truffle
+      dockerfile: Dockerfile
+      args:
+        timezone: ${TIME_ZONE}
+    volumes:
+      - ${TRUFFLE_PROJECT_FOLDER}:/root/truffle
+  #############################
+  # ganache-cli
+  #############################
+  ganache-cli:
+    image: hermeslin/private-chain:ganache-cli-1.0
+    build:
+      context: ./ganache-cli
+      dockerfile: Dockerfile
+      args:
+        timezone: ${TIME_ZONE}
+    stop_grace_period: 30s
+    stop_signal: SIGINT
+    expose:
+      - ${GANACHE_CLI_PORT}
+    ports:
+      - "${GANACHE_CLI_HOST_PORT}:${GANACHE_CLI_PORT}"
+    command: ["--accounts", "${GANACHE_CLI_ACCOUNTS}", "--port", "${GANACHE_CLI_PORT}", "--networkId", "${GANACHE_CLI_NETWORK_ID}"]
